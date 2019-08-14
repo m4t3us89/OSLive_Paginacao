@@ -1,0 +1,22 @@
+1.Cliente
+    1.1-Instale um servidor APACHE de sua preferência.
+    1.2-Coloque no diretório HTDOCS (caso tenha optado pelo xampp) as pastas/arquivos: CONTROLLERS, LIBS, VIEWS, app.js, index.html
+
+2.Banco de Dados MYSQL
+    2.1-Sincronize o modelo MODEL.MWB(toda a estrutura do banco está neste arquivo) no workbench -> https://www.mysql.com/products/workbench/
+    obs: Na etapa acima vc criará a estrutura do banco.
+
+3.API
+    3.1-Instale o NODEJS -> https://nodejs.org/en/
+    3.2-Na pasta API, instale as depdendências por meio do CMD/POWERSHELL com o comando: NPM INSTALL (abrir o cmd/powershell dentro da pasta API)
+    3.3-No arquivo API/SERVICES/DATABASE.JS, configure seu banco de dados de acordo com a etapa 2.1.
+    3.4-Execute o arquivo startServer.bat ou através do comando NODE APP.JS dentra da pasta API para subir a API/SERVIDOR.
+
+
+E por fim, execute sua aplicação que se encontra no APACHE.
+obs: Caso a API subir com a porta diferente de 5000 é necessário mudar o ENDPOINT da aplicação que está no APACHE, no diretorio CONTROLLERS/PAGINACAO.JS
+na linha 2872 em diante ...
+
+=)
+
+

@@ -1,0 +1,816 @@
+<style>
+	h4{
+		color: black;
+		font-size: 14px;
+	}
+	h3{
+		color: black;
+		font-size: 20px;
+	}
+	.btn-dark{
+		background-color: #868e96;
+		color: white;
+	}
+	.form-control{
+		border-style: solid;
+		border-color: gray;
+		border-width: 1px;
+		background-color: white;
+	}
+	.form-control:focus{
+		border-style: solid;
+		border-color: black;
+		border-width: 1px;
+	}
+	th{
+		text-align: center;
+		color: black;
+	}	
+	hr{
+		border-top: 1px solid #ccc;
+	}
+
+	.menu{
+		overflow-y: scroll; overflow-x: hidden; overflow-y: auto; box-shadow: -.5px -.5px 0 .5px #ccc, inset -1px -1px 0 0 #ccc; background-color: #FBFCFC; padding-left: 10px; padding-right: 10px;
+	}
+
+	.caixaInfo{
+		background-color:#FFFFFF;color:#393E46;
+	}
+
+	.processSelecionado{
+		
+		color: white;
+		background-color: #393E46;
+	}
+
+	.processNSelecionado{
+		color: black;
+		font-weight: normal;
+	}
+
+	@media only screen and (min-width: 768px) {
+		.menu{
+			position: fixed; height: 100%; width: 240px;
+		}
+		.caixaInfo{
+			margin-left: 16px;
+		}
+	}
+	
+	@media only screen and (max-width: 768px) {
+
+		.menu {
+			margin-left: 8px;
+			font-size:1.2em;
+			height:100%;
+			overflow:auto;
+			width:100%; 
+			top:0;
+		}
+		.caixaInfo{
+			margin-left: 17px;
+			margin-right: 17px;
+		}
+	}
+	
+	/*::-webkit-scrollbar-track {
+    	background-color: #F4F4F4;
+	}
+	::-webkit-scrollbar {
+		width: 6px;
+		background: #F4F4F4;
+	}
+	::-webkit-scrollbar-thumb {
+		background: #dad7d7;
+	}*/
+</style>
+<div class="container-fluid text-center">
+
+
+
+<div class="row">
+
+	<div class="col-sm-12 col-md-2" style="padding-left: 0;">
+		
+
+			<div class="menu">
+					
+						<div  style="cursor: pointer;margin-top: 20px;" id="abrir_fechar_info_processo"  ng-click="abrir_fechar_info_processo_()"><h4 style="text-align: start;">Info. Processo <i class="fa fa-angle-down" ></i></h4></div> 	
+					
+						<div id="corpo_info_processo" hidden>
+							<div class="form-group">
+								<p  style="color:#393E46;">Proc. Selecionado: <b><u>{{idProc}}</u></b></p>
+								<select class="form-control" id="byteProcesso"  ng-change="selectByte()" ng-model="byteProc">
+									<option value=""  disabled selected>Selecione o byte...</option>
+									<option ng-repeat="byteP in bytePs" value="{{byteP.byte}}">{{byteP.byte}}</option>
+								</select>
+							</div>
+							
+							<div class="form-group"  align="left">
+								<div class="row">
+									<div class="col-md-10 caixaInfo">
+											<p></p>
+											<p>byte: {{infoByte}}</p>
+											<p>M. Log: {{infoMLog}}</p>
+											<p>M. Fis: {{infoMFis}}</p>
+									</div>
+									<div class="col-md-2"></div>	
+								</div>	
+							</div>
+							
+						</div>
+						
+						<hr>
+			
+						<div style="cursor: pointer;" id="abrir_fechar_carregar_processo"  ng-click="abrir_fechar_carregar_processo_()"><h4 style="text-align: start;">Carregar Simulação <i class="fa fa-angle-down" ></i></h4></div> 
+						
+								<div id="corpo_carregar_processo" hidden>
+											<select class="form-control"  ng-disabled="isSimulando || hasSimulacaoCarregada" data-ng-attr-title="{{hasSimulacaoCarregada == true ? 'OPS!!! PARA CARREGAR OUTRA SIMULAÇÃO É NCESSÁRIO LIMPAR A TABELA ATUAL.': ''}}" ng-model="simulacaoSelecionada"  ng-options="option.nome for option in simulacoesSalvas track by option.nome"  id="carregarProc"   ng-change="carregarSimulacao(simulacaoSelecionada)">
+													<option value="" disabled selected>Selecione o desejado...</option>
+											</select>
+											<div class="text-muted" ng-if="isLoadSimulacao" style="text-align: start; font-size: 12px;">
+													<i class="fa fa-spinner fa-spin fa-fw"></i> Aguarde, buscando...
+											</div>
+											
+								</div>
+						
+								<hr>	
+			
+			
+						<div  style="cursor: pointer;" id="abrir_fechar_criar_processo"  ng-click="abrir_fechar_criar_processo_()"><h4 style="text-align: start;">Criar Processo <i class="fa fa-angle-up" ></i></h4></div> 
+			
+						<div id="corpo_criar_processo">	
+							<div class="form-group">
+								<select class="form-control" ng-disabled="isSimulando" id="processoID" ng-model="processo.id">
+									<option value="" disabled selected>Id Processo</option>
+									<option value="A">A</option>
+									<option value="B">B</option>
+									<option value="C">C</option>
+									<option value="D">D</option>
+									<option value="E">E</option>
+									<option value="F">F</option>
+									<option value="G">G</option>
+									<option value="H">H</option>
+									<option value="I">I</option>
+									<option value="J">J</option>
+									<option value="K">K</option>
+									<option value="L">L</option>
+									<option value="M">M</option>
+									<option value="N">N</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<input type="number" ng-disabled="isSimulando" class="form-control" id="inputDefault" placeholder="Qt. bytes" ng-model="processo.bytes">
+							</div>
+							<a class="btn btn-success btn-block" ng-disabled="isSimulando" ng-click="criar(processo)"><i class="fa fa-plus-circle"></i> Criar</a>
+							
+						</div>	
+					
+						<hr>
+			
+						
+			
+						
+			
+							<div style="cursor: pointer;" id="abrir_fechar_tabela_processo"  ng-click="abrir_fechar_tabela_processo_()"><h4 style="text-align: start;">Tabela de Processos <i class="fa fa-angle-up" ></i></h4></div> 	
+									<div id="corpo_tabela_processo">
+										<div class="form-group">
+											<div ng-if="processos && processos.length > 0">
+												<table class="table" style="font-size: 15px; border-collapse: collapse; border: 1px solid white "> 
+													<thead>
+														<tr>
+															<th style="border: 1px solid white">ID</th>
+															<th style="border: 1px solid white">Byte(s)</th>
+															<th style="border: 1px solid white">Ação</th>
+														</tr>
+													</thead>
+													<tbody style="color: black;">
+														<tr ng-repeat="processo in processos"> 
+															<td  ng-class="{'processNSelecionado': processo.id!=selecIdProc, 'processSelecionado': processo.id==selecIdProc}"  style="border: 0.1px solid white; cursor: pointer;" ng-click="selecProc(processo.id)">{{processo.id}}</td>
+															<td  style="border: 0.1px solid white">{{processo.bytes}}</td>
+															<td  style="border: 0.1px solid white">
+																<button class="btn btn-danger btn-sm" ng-disabled="isSimulando" style="padding: 2px 5px 2px 5px; font-size: 9px; margin-left: 5px;" ng-click="remover(processo.id)"><i class="fa fa-remove"  title="Clique para excluir o processo"></i></button>
+															
+															</td>
+														</tr>
+													<tbody>	
+												</table>
+
+												<div class="row" style="margin-bottom: 5px;">
+													<div class="col-md-12">
+														<button class="btn btn-danger btn-sm" style="width: 100%;" data-ng-click="limparTabela(); nomeSimulacao=''" ng-disabled="isSimulando"><i class="fa fa-times-circle"></i> Limpar Tabela</button>
+													</div>	
+												</div>
+
+												<div class="row" style="margin-bottom: 5px;">
+													<div class="col-md-12">
+														<input class="form-control input-sm"  style="width: 100%;" placeholder="Informe o nome para salvar" id="nomeSimulacao" ng-disabled="isSimulando" ng-hide="hasSimulacaoCarregada" ng-model="nomeSimulacao"/>
+													</div>
+												</div>	
+
+												<div class="row">
+													<div class="col-md-6" style="padding-right: 1px;">
+															<button class="btn btn-default" style="width: 100%;" ng-click="simular()" ng-if='!isSimulando'><i class="fa fa-film"></i> Simular</button>
+															<button class="btn btn-danger"  style="width: 100%;" ng-click="pararSimulacao()" ng-if='isSimulando && !simulacaoConcluida'><i class="fa fa-spinner fa-spin fa-fw"></i> Parar</button>
+															<button class="btn btn-danger" style="width: 100%;" ng-click="pararSimulacao()" ng-if='isSimulando && simulacaoConcluida'><i class="fa fa-remove"></i> Fechar</button>
+													</div>
+													<div class="col-md-6" style="padding-left: 1px;">
+															<button class="btn btn-default" style="width: 100%;" data-ng-click="salvarSimulacao(nomeSimulacao, simulacaoSelecionada);nomeSimulacao=''" ng-disabled="isSimulando || isLoadSalvarSimulacao" ><i class="fa fa-cloud-upload"></i> Salvar</button>
+													</div>
+												</div>
+														
+															
+															
+															
+
+													
+												
+											</div>	
+											<h6 class="text-muted" ng-if="!processos || processos.length == 0">Não há processo cadastrado.</h6>
+										</div>
+									
+									</div>
+									<hr>
+
+
+																
+									<!--<div style="cursor: pointer;" id="abrir_fechar_teste"  ng-click="abrir_fechar_teste()"><h4 style="text-align: start;">Testes <i class="fa fa-angle-up" ></i></h4></div> 	
+									<div id="corpo_teste">
+										<input class="form-control" id="teste_" ng-model="teste_" placeholder="Página Fisica"/>
+										<input class="form-control" id="teste__" ng-model="teste__" placeholder="Página Fisica"/>
+										<button class="btn btn-default" style="width: 100%; margin-top: 5px;" ng-click="teste(teste_ , teste__)">Testar</button>
+									</div>
+									<hr>-->		
+
+			</div>
+
+
+	</div>
+
+	<div class="col-sm-12 col-md-10" style="padding-left: 3%;">
+
+	<!-- memÃ³rias lÃ³gicas -->
+	<div class="row" >
+		<!-- Aqui ficarÃ¡ a parte de cima, botÃ£o para configuraÃ§Ã£o, memÃ³rias lÃ³gicas -->
+
+		<div class="col-md-12" align="left" >
+			
+			<div ng-hide="isSimulando">
+				<h3>Memórias Lógicas dos Processos</h3>
+
+				<div class="btn-group" role="group" aria-label="..." ng-repeat="processo in processos">
+					<a type="button" ng-class="{'btn btn-dark': processo.id!=selecIdProc, 'btn btn-default': processo.id==selecIdProc}" ng-click="selecProc(processo.id);">{{processo.id}}</a>
+				</div>
+			</div>
+
+			<div ng-hide="!isSimulando">
+				<div ng-if="!simulacaoConcluida" style="margin-bottom: 2px; margin-top: 5px;"><a type="button" class="btn btn-default">{{ simulandoProcesso }}</a></div>
+				<h3 ng-if="simulacaoConcluida" style="margin-bottom: 2px;">Animação se encerra em: <b><u>{{ countFecharAnimacao }}</u></b> <a href="javascript: void(0);" style="font-size: 11px; margin-left: 5px; color: blue;" ng-if="countFecharAnimacao > 0" ng-click="cancelarFecharAnimacao()">Cancelar</a></h3>
+				<span class="text-muted">Tempo decorrido: {{ timeAnimacao }} segundo(s)</span>
+
+			</div>
+			
+		</div>
+
+	</div>
+
+	<hr>
+
+	<div class="row" ng-hide="!isSimulando" style="color: black;"> 
+		<div class="row">
+			<div class="col-md-3" style="margin-left: 50px;">
+				
+				<h4 class="text-muted">Memória Lógica</h4>
+				<table class="table"  align="center" id="tabela_logica">
+						<thead>
+							<tr>
+								<th>Pag</th>
+								<th>Deslocamento</th>
+								<th>byte</th>
+							</tr>
+						</thead>
+						<tbody style="color: white;">
+						</tbody>
+				</table>
+
+			</div>
+			<div class="col-md-3">
+
+				<h4 class="text-muted">Tab. Pag. Proc.</h4>
+				<table class="table" id="tabela_pagina" >
+					<thead>
+						<tr>
+							<th>Pag Log</th>
+							<th>Pag Fis</th>
+						</tr>
+					</thead>
+					<tbody  style="color: white;">
+					</tbody>
+				</table>
+				
+			</div>
+			<div class="col-md-5">
+				
+				<h4 class="text-muted">Memória Física</h4>
+				<div class="row">
+					<div class="col-md-6">	
+						<table class="table" align="center" id="tabela_fisica">
+							<thead>
+								<tr>
+									<th>End</th>
+									<th>Deslocamento</th>
+									<th>byte</th>
+								</tr>
+							</thead>
+			
+							<tbody  style="color: white;">
+							</tbody>
+						</table>
+					</div>
+					<div class="col-md-6">	
+							<table class="table" align="center" id="tabela_fisica_2">
+								<thead>
+									<tr>
+										<th>End</th>
+										<th>Deslocamento</th>
+										<th>byte</th>
+									</tr>
+								</thead>
+				
+								<tbody  style="color: white;">
+								</tbody>
+							</table>
+						</div>
+					</div>			
+
+			</div>
+		
+		</div>		
+	</div>
+
+	<div class="row" ng-hide="isSimulando">
+		<!-- Aqui ficarÃ¡ a parte de exibiÃ§Ã£o das memÃ³rias -->
+		
+		<!-- MemÃ³ria LÃ³gica -->
+		<div class="col-md-2">
+
+			<h4 class="text-muted">Memória Lógica</h4>
+
+		
+				<table class="table" align="center">
+					<thead>
+						<tr >
+							<th>Pag</th>
+							<th>Deslocamento</th>
+							<th>byte</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<!--
+						<tr ng-repeat="byte in bytes" bgcolor="#44C662">
+							<td style="padding: 2px">{{byte.id}}</td>
+							<td style="padding: 2px">{{byte.byte}}</td>
+							<td style="padding: 2px">{{byte.codLocalizador}}</td>
+						</tr>
+						-->
+
+						<!-- pgml 1 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML1 in pagML1s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML1.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML1.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML1.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 2 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML2 in pagML2s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML2.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML2.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML2.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 3 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML3 in pagML3s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML3.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML3.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML3.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 4 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML4 in pagML4s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML4.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML4.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML4.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 5 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML5 in pagML5s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML5.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML5.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML5.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 6 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML6 in pagML6s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML6.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML6.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML6.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 7 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML7 in pagML7s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML7.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML7.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML7.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 8 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML8 in pagML8s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML8.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML8.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML8.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 9 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML9 in pagML9s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML9.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML9.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML9.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 10 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML10 in pagML10s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML10.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML10.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML10.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 11 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML11 in pagML11s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML11.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML11.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML11.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 12 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML12 in pagML12s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML12.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML12.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML12.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 13 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML13 in pagML13s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML13.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML13.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML13.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg ml 14 -->
+						<tr bgcolor="#44C662" ng-repeat="pagML14 in pagML14s" ng-style="corML1">
+							<td style="padding: 2px">{{pagML14.enderecoLogico}}</td>
+							<td style="padding: 2px">{{pagML14.deslocamento}}</td>
+							<td style="padding: 2px">{{pagML14.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+					</tbody>
+				</table>
+			
+		</div>
+
+		<!-- Tabela de PÃ¡ginas -->
+		<div class="col-md-2">
+			<h4 class="text-muted">Tab. Pag. Proc.</h4>
+		
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Pag Log</th>
+							<th>Pag Fis</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr bgcolor="#44C662" ng-repeat="tabPagProc in tabPagProcs" ng-style="corML1">
+							<td style="padding: 2px">{{tabPagProc.enderecoLogico}}</td>
+							<td style="padding: 2px">{{tabPagProc.enderecoFisico}}</td>
+						</tr>	
+					</tbody>
+				</table>
+		
+		</div>
+
+		<!-- MemÃ³ria FÃ­sica -->
+		<div class="col-md-4">
+			<div class="row">
+				<h4 class="text-muted">Memória Fí­sica</h4>
+			</div>
+			
+				<div class="row">
+					<div class="col-md-6">
+						<table class="table" align="center">
+						<thead>
+							<tr>
+								<th>End</th>
+								<th></th>
+								<th>byte</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<!-- pg 1 -->
+							<tr bgcolor="#44C662" ng-repeat="pag1 in pag1s" ng-style="corMF1">
+								<td style="padding: 2px">{{pag1.enderecoFisico}}</td>
+								<td style="padding: 2px">{{pag1.deslocamento}}</td>
+								<td style="padding: 2px">{{pag1.byte}}</td>
+							</tr>
+							<tr>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+							</tr>
+
+							<!-- pg 2 -->
+							<tr bgcolor="#44C662" ng-repeat="pag2 in pag2s" ng-style="corMF2">
+								<td style="padding: 2px">{{pag2.enderecoFisico}}</td>
+								<td style="padding: 2px">{{pag2.deslocamento}}</td>
+								<td style="padding: 2px">{{pag2.byte}}</td>
+							</tr>
+							<tr>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+							</tr>
+
+							<!-- pg 3 -->
+							<tr bgcolor="#44C662" ng-repeat="pag3 in pag3s" ng-style="corMF3">
+								<td style="padding: 2px">{{pag3.enderecoFisico}}</td>
+								<td style="padding: 2px">{{pag3.deslocamento}}</td>
+								<td style="padding: 2px">{{pag3.byte}}</td>
+							</tr>
+							<tr>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+							</tr>
+
+							<!-- pg 4 -->
+							<tr bgcolor="#44C662" ng-repeat="pag4 in pag4s" ng-style="corMF4">
+								<td style="padding: 2px">{{pag4.enderecoFisico}}</td>
+								<td style="padding: 2px">{{pag4.deslocamento}}</td>
+								<td style="padding: 2px">{{pag4.byte}}</td>
+							</tr>
+							<tr>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+							</tr>
+
+							<!-- pg 5 -->
+							<tr bgcolor="#44C662" ng-repeat="pag5 in pag5s" ng-style="corMF5">
+								<td style="padding: 2px">{{pag5.enderecoFisico}}</td>
+								<td style="padding: 2px">{{pag5.deslocamento}}</td>
+								<td style="padding: 2px">{{pag5.byte}}</td>
+							</tr>
+							<tr>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+							</tr>
+
+							<!-- pg 6 -->
+							<tr bgcolor="#44C662" ng-repeat="pag6 in pag6s" ng-style="corMF6">
+								<td style="padding: 2px">{{pag6.enderecoFisico}}</td>
+								<td style="padding: 2px">{{pag6.deslocamento}}</td>
+								<td style="padding: 2px">{{pag6.byte}}</td>
+							</tr>
+							<tr>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+								<td style="padding: 1px"></td>
+							</tr>
+
+							<!-- pg 7 -->
+							<tr bgcolor="#44C662" ng-repeat="pag7 in pag7s" ng-style="corMF7">
+								<td style="padding: 2px">{{pag7.enderecoFisico}}</td>
+								<td style="padding: 2px">{{pag7.deslocamento}}</td>
+								<td style="padding: 2px">{{pag7.byte}}</td>
+							</tr>
+						</tbody>
+						</table>
+					
+			
+				</div>
+
+
+				<div class="col-md-6">
+
+				<!-- teste tabela -->
+
+				<table class="table" align="center" ng-if="!isSimulando">
+					<thead>
+						<tr>
+							<th>End</th>
+							<th></th>
+							<th>byte</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<!-- pg 8 -->
+						<tr bgcolor="#44C662" ng-repeat="pag8 in pag8s" ng-style="corMF8">
+							<td style="padding: 2px">{{pag8.enderecoFisico}}</td>
+							<td style="padding: 2px">{{pag8.deslocamento}}</td>
+							<td style="padding: 2px">{{pag8.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg 9 -->
+						<tr bgcolor="#44C662" ng-repeat="pag9 in pag9s" ng-style="corMF9">
+							<td style="padding: 2px">{{pag9.enderecoFisico}}</td>
+							<td style="padding: 2px">{{pag9.deslocamento}}</td>
+							<td style="padding: 2px">{{pag9.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg 10 -->
+						<tr bgcolor="#44C662" ng-repeat="pag10 in pag10s" ng-style="corMF10">
+							<td style="padding: 2px">{{pag10.enderecoFisico}}</td>
+							<td style="padding: 2px">{{pag10.deslocamento}}</td>
+							<td style="padding: 2px">{{pag10.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg 11 -->
+						<tr bgcolor="#44C662" ng-repeat="pag11 in pag11s" ng-style="corMF11">
+							<td style="padding: 2px">{{pag11.enderecoFisico}}</td>
+							<td style="padding: 2px">{{pag11.deslocamento}}</td>
+							<td style="padding: 2px">{{pag11.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg 12 -->
+						<tr bgcolor="#44C662" ng-repeat="pag12 in pag12s" ng-style="corMF12">
+							<td style="padding: 2px">{{pag12.enderecoFisico}}</td>
+							<td style="padding: 2px">{{pag12.deslocamento}}</td>
+							<td style="padding: 2px">{{pag12.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg 13 -->
+						<tr bgcolor="#44C662" ng-repeat="pag13 in pag13s" ng-style="corMF13">
+							<td style="padding: 2px">{{pag13.enderecoFisico}}</td>
+							<td style="padding: 2px">{{pag13.deslocamento}}</td>
+							<td style="padding: 2px">{{pag13.byte}}</td>
+						</tr>
+						<tr>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+							<td style="padding: 1px"></td>
+						</tr>
+
+						<!-- pg 14 -->
+						<tr bgcolor="#44C662" ng-repeat="pag14 in pag14s" ng-style="corMF14">
+							<td style="padding: 2px">{{pag14.enderecoFisico}}</td>
+							<td style="padding: 2px">{{pag14.deslocamento}}</td>
+							<td style="padding: 2px">{{pag14.byte}}</td>
+						</tr>
+					</tbody>
+				</table>
+				
+
+				<!-- fim tabela -->
+
+				
+				</div>
+				
+			</div>
+		</div>
+
+		<!-- ApresentaÃ§Ã£o EstatÃ­sticas -->
+		<div class="col-md-4">
+			<div class="row" style="margin-bottom: 13px;">
+				<h4 class="text-muted">Estatísticas</h4>
+
+			</div>
+			
+			
+			
+			<font color="#757575">
+			<div class="row" align="left">
+				<div class="col-md-1"></div>
+
+				<div class="col-md-10">
+					<!--style="box-shadow: -.5px -.5px 0 .5px #ccc, inset -1px -1px 0 0 #ccc; background-color: #FBFCFC; padding: 5px 5px 5px 5px;"-->
+					<div>
+						<p>Quantidade de Memória: {{qtMemoria}}</p>
+						<p>Memória Disponível: {{memDisponivel}}</p>
+						<p>Memória Utilizada: {{memUtilizada}}</p>
+						<p>Quantidade de Processos: {{qtProcessos}}</p>
+						<p>Quantidade de Páginas: {{qtPaginas}}</p>
+						<p>Fragmentação Interna: {{fragmentacao}}</p>
+					</div>
+					
+				</div>
+
+				<div class="col-md-1"></div>
+			</div>
+			</font>
+		</div>
+
+	</div>
+	</div>
+	
+</div>
+
+</div>
